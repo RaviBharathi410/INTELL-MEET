@@ -1,10 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Globe, BarChart3, Users, Zap } from 'lucide-react';
+import { Globe, BarChart3, Users } from 'lucide-react';
 
 const stats = [
   { icon: Globe, label: 'Global Nodes', value: '450+' },
-  { icon: Zap, label: 'Latency', value: '< 1.2s' },
   { icon: Users, label: 'Active Sync', value: '24k' },
   { icon: BarChart3, label: 'Data Processed', value: '1.2PB' }
 ];

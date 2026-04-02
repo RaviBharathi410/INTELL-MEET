@@ -7,10 +7,10 @@ import Controls from '../components/meet/Controls';
 
 const MeetRoom: React.FC = () => {
   return (
-    <div className="h-screen bg-black flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-[#F8F8FA] text-zinc-950 flex flex-col overflow-hidden">
       <MeetNavbar />
       
-      <div className="flex-1 flex overflow-hidden">
+      <div className="grid grid-cols-[300px_1fr_360px] h-[calc(100vh-64px)] overflow-hidden">
         <Sidebar />
         <VideoGrid />
         <AIPanel />

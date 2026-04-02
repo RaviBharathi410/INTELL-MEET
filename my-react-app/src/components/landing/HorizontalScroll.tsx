@@ -8,29 +8,29 @@ import { MOTION } from '../../utils/motion';
 gsap.registerPlugin(ScrollTrigger);
 
 const steps = [
-  { 
-    number: '01', 
-    title: 'Cognitive Start', 
+  {
+    number: '01',
+    title: 'Cognitive Start',
     desc: 'Launch a neural meeting node with zero overhead. Secure, encrypted, instant.',
-    bg: 'radial-gradient(circle at center, rgba(79,70,229,0.03) 0%, #fff 100%)' 
+    bg: 'radial-gradient(circle at center, rgba(79,70,229,0.03) 0%, #fff 100%)'
   },
-  { 
-    number: '02', 
-    title: 'Spectral Capture', 
+  {
+    number: '02',
+    title: 'Spectral Capture',
     desc: 'Real-time audio processing with 99.9% semantic integrity. Neural listening activated.',
-    bg: 'radial-gradient(circle at center, rgba(124,58,237,0.03) 0%, #fff 100%)' 
+    bg: 'radial-gradient(circle at center, rgba(124,58,237,0.03) 0%, #fff 100%)'
   },
-  { 
-    number: '03', 
-    title: 'Neural Synthesis', 
+  {
+    number: '03',
+    title: 'Neural Synthesis',
     desc: 'Automated decision mapping and strategic summaries generated in real-time.',
-    bg: 'radial-gradient(circle at center, rgba(236,72,153,0.03) 0%, #fff 100%)' 
+    bg: 'radial-gradient(circle at center, rgba(236,72,153,0.03) 0%, #fff 100%)'
   },
-  { 
-    number: '04', 
-    title: 'Team Propulsion', 
+  {
+    number: '04',
+    title: 'Team Propulsion',
     desc: 'Decisions converted to tasks and pushed to your team stack instantly.',
-    bg: 'radial-gradient(circle at center, rgba(79,70,229,0.03) 0%, #fff 100%)' 
+    bg: 'radial-gradient(circle at center, rgba(79,70,229,0.03) 0%, #fff 100%)'
   },
 ];
 
@@ -104,28 +104,28 @@ const HorizontalDesktop: React.FC = () => {
       scrollTrigger: {
         trigger: triggerRef.current,
         pin: true,
-        scrub: 1.5,
+        scrub: 1,
         start: 'top top',
-        end: () => `+=${containerRef.current!.scrollWidth}`,
+        end: () => `+=${containerRef.current!.scrollWidth * 0.75}`,
       }
     });
 
     gsap.utils.toArray('.phase-section').forEach((section: any) => {
-       gsap.fromTo(section.querySelector('.phase-content'), 
-         { scale: 0.8, opacity: 0 },
-         { 
-           scale: 1, 
-           opacity: 1, 
-           duration: MOTION.duration.slow, 
-           ease: MOTION.ease.standard,
-           scrollTrigger: {
-             trigger: section,
-             containerAnimation: pin,
-             start: 'left center',
-             toggleActions: 'play none none reverse'
-           }
-         }
-       );
+      gsap.fromTo(section.querySelector('.phase-content'),
+        { scale: 0.8, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: MOTION.duration.slow,
+          ease: MOTION.ease.standard,
+          scrollTrigger: {
+            trigger: section,
+            containerAnimation: pin,
+            start: 'left center',
+            toggleActions: 'play none none reverse'
+          }
+        }
+      );
     });
 
     return () => pin.kill();
@@ -135,45 +135,45 @@ const HorizontalDesktop: React.FC = () => {
     <div ref={triggerRef} className="relative overflow-hidden bg-white">
       {/* Background Floating Blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
-         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] animate-pulse" />
-         <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-accent-2/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-accent-2/5 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className="flex h-screen items-center"
         style={{ width: `${steps.length * 100}vw` }}
       >
         {steps.map((step, i) => (
-          <section 
-            key={i} 
+          <section
+            key={i}
             className="phase-section h-screen w-screen flex flex-col items-center justify-center relative px-20"
             style={{ background: step.bg }}
           >
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden pointer-events-none">
-                <h1 className="font-display text-[30rem] xl:text-[50rem] font-black text-black/[0.03] tracking-tighter leading-none select-none">
-                   {step.number}
-                </h1>
-             </div>
-             
-             <div className="phase-content relative z-10 flex flex-col items-center text-center max-w-6xl px-8">
-                <span className="font-mono text-accent text-sm mb-8 tracking-[0.6em] uppercase font-black opacity-40">
-                   Phase {step.number} — System Stable
-                </span>
-                <h2 className="font-display text-7xl lg:text-[100px] xl:text-[140px] font-black text-zinc-950 mb-12 tracking-[-0.05em] leading-[0.85]">
-                   {step.title}
-                </h2>
-                <p className="text-zinc-600 text-xl lg:text-2xl xl:text-3xl font-medium leading-relaxed max-w-3xl font-body border-t border-zinc-100 pt-10">
-                   {step.desc}
-                </p>
-             </div>
-             
-             {/* Connection Line */}
-             {i < steps.length - 1 && (
-               <div className="absolute right-0 top-1/2 h-[4px] w-40 xl:w-80 bg-zinc-100 shadow-inner overflow-hidden">
-                  <div className="h-full bg-accent w-full -translate-x-full animate-line-move" />
-               </div>
-             )}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden pointer-events-none">
+              <h1 className="font-display text-[30rem] xl:text-[50rem] font-black text-black/[0.03] tracking-tighter leading-none select-none">
+                {step.number}
+              </h1>
+            </div>
+
+            <div className="phase-content relative z-10 flex flex-col items-center text-center max-w-6xl px-8">
+              <span className="font-mono text-accent text-sm mb-8 tracking-[0.6em] uppercase font-black opacity-40">
+                Phase {step.number} — System Stable
+              </span>
+              <h2 className="font-display text-7xl lg:text-[100px] xl:text-[140px] font-black text-zinc-950 mb-12 tracking-[-0.05em] leading-[0.85]">
+                {step.title}
+              </h2>
+              <p className="text-zinc-600 text-xl lg:text-2xl xl:text-3xl font-medium leading-relaxed max-w-3xl font-body border-t border-zinc-100 pt-10">
+                {step.desc}
+              </p>
+            </div>
+
+            {/* Connection Line */}
+            {i < steps.length - 1 && (
+              <div className="absolute right-0 top-1/2 h-[4px] w-40 xl:w-80 bg-zinc-100 shadow-inner overflow-hidden">
+                <div className="h-full bg-accent w-full -translate-x-full animate-line-move" />
+              </div>
+            )}
           </section>
         ))}
       </div>

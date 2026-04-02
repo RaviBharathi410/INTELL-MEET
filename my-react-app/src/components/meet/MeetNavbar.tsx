@@ -20,21 +20,21 @@ const MeetNavbar: React.FC = () => {
   }, [time]);
 
   return (
-    <nav className="h-16 bg-black border-b border-white/5 flex items-center justify-between px-6 z-[1001]">
+    <nav className="h-16 bg-white/90 backdrop-blur-xl border-b border-zinc-200 flex items-center justify-between px-6 z-[1001]">
        {/* Left: Logo + ID */}
        <div className="flex items-center space-x-6">
           <div 
             className="flex items-center space-x-3 cursor-pointer group"
             onClick={() => navigate('/')}
           >
-            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-black group-hover:rotate-12 transition-transform">
+            <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-zinc-950 group-hover:rotate-12 transition-transform">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-4 h-4"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 px-3 py-1.5 bg-white/[0.03] border border-white/5 rounded-lg group cursor-pointer hover:border-accent transition-colors">
-             <span className="font-mono text-[10px] uppercase tracking-widest text-white/40 group-hover:text-accent">ID: ALPHA-V8-77B</span>
-             <Copy size={12} className="text-white/20 group-hover:text-accent" />
+          <div className="flex items-center space-x-3 px-3 py-1.5 bg-[#F8F8FA] border border-[#E4E4E7] rounded-lg group cursor-pointer hover:border-[#4F46E5] transition-colors">
+             <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-500 group-hover:text-[#4F46E5]">ID: ALPHA-V8-77B</span>
+             <Copy size={12} className="text-zinc-500 group-hover:text-[#4F46E5]" />
           </div>
        </div>
 
@@ -56,7 +56,7 @@ const MeetNavbar: React.FC = () => {
                 <div className="w-1 bg-accent h-2/3 rounded-sm" />
                 <div className="w-1 bg-accent-2 h-1/2 rounded-sm animate-pulse" />
              </div>
-             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/30 hidden md:inline">Neural Link Stable</span>
+             <span className="text-[9px] font-black uppercase tracking-[0.2em] text-indigo-600 hidden md:inline">Neural Link Stable</span>
           </div>
 
           <button 

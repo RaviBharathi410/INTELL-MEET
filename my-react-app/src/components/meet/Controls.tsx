@@ -45,14 +45,14 @@ const Controls: React.FC = () => {
           </AnimatePresence>
        </div>
 
-       <div className="relative bg-black/60 backdrop-blur-3xl border border-white/10 rounded-3xl p-3 flex items-center space-x-4 shadow-[0_40px_100px_rgba(0,0,0,1)] pointer-events-auto">
+       <div className="relative rounded-full bg-white border border-zinc-200 shadow-xl backdrop-blur-xl p-3 flex items-center space-x-4 pointer-events-auto">
           {/* Controls Group */}
-          <div className="flex items-center space-x-3 px-3 border-r border-white/5">
+          <div className="flex items-center space-x-3 px-3 border-r border-zinc-200">
              <button 
                onClick={() => setMicOn(!micOn)}
                className={clsx(
-                 'w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 group active:scale-90',
-                 micOn ? 'bg-bg-3 hover:bg-white/10 text-white' : 'bg-red-500 text-white'
+                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-90',
+                 micOn ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950' : 'bg-red-500 text-white'
                )}
              >
                 {micOn ? <Mic size={20} /> : <MicOff size={20} />}
@@ -60,8 +60,8 @@ const Controls: React.FC = () => {
              <button 
                onClick={() => setCamOn(!camOn)}
                className={clsx(
-                 'w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 group active:scale-90',
-                 camOn ? 'bg-bg-3 hover:bg-white/10 text-white' : 'bg-red-500 text-white'
+                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-90',
+                 camOn ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950' : 'bg-red-500 text-white'
                )}
              >
                 {camOn ? <Video size={20} /> : <VideoOff size={20} />}
@@ -69,25 +69,25 @@ const Controls: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3 px-3">
-             <button className="w-12 h-12 rounded-2xl bg-bg-3 hover:bg-white/10 text-white flex items-center justify-center transition-all active:scale-90 shadow-xl group">
+             <button className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group">
                 <MonitorUp size={20} className="group-hover:translate-y-[-2px] transition-transform" />
              </button>
              <button 
                onClick={() => setIsRecording(!isRecording)}
                className={clsx(
-                 'w-12 h-12 rounded-2xl bg-bg-3 hover:bg-white/10 flex items-center justify-center transition-all active:scale-90 shadow-xl group',
-                 isRecording ? 'text-red-500' : 'text-white'
+                 'w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-all active:scale-90 shadow-sm group',
+                 isRecording ? 'text-red-500' : 'text-zinc-950'
                )}
              >
                 <CircleDot size={20} className={clsx(isRecording && 'animate-pulse')} />
              </button>
              <button 
-                className="w-12 h-12 rounded-2xl bg-bg-3 hover:bg-white/10 text-white flex items-center justify-center transition-all active:scale-90 shadow-xl group relative"
+                className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group relative"
                 onClick={() => triggerEmoji('🔥')}
              >
                 <Smile size={20} className="group-hover:scale-110 transition-transform" />
              </button>
-             <button className="w-12 h-12 rounded-2xl bg-bg-3 hover:bg-white/10 text-white flex items-center justify-center transition-all active:scale-90 shadow-xl group">
+             <button className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group">
                 <MoreVertical size={20} />
              </button>
           </div>
@@ -95,7 +95,7 @@ const Controls: React.FC = () => {
           {/* End Call Separator */}
           <div className="pl-3">
              <button 
-               className="h-12 px-6 bg-red-600 hover:bg-red-500 text-white rounded-2xl flex items-center space-x-3 transition-colors active:scale-95 shadow-xl shadow-red-500/10 group"
+               className="h-12 px-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center space-x-3 transition-colors active:scale-95 shadow-xl shadow-red-500/10 group"
                onClick={() => window.location.href = '/'}
              >
                 <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
@@ -105,8 +105,8 @@ const Controls: React.FC = () => {
        </div>
 
        {/* Floating REC tag */}
-       {isRecording && (
-           <div className="absolute top-[-80px] px-4 py-2 bg-black border border-red-500/30 rounded-full flex items-center space-x-2 animate-float">
+        {isRecording && (
+           <div className="absolute top-[-80px] px-4 py-2 bg-[#FFFFFF] border border-red-500/30 rounded-full flex items-center space-x-2 shadow-xl animate-float">
                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
                 <span className="text-[9px] font-mono font-black text-red-500 tracking-[0.2em] uppercase">Recording Node Status</span>
            </div>

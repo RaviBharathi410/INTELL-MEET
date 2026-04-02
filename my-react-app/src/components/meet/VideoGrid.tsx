@@ -17,8 +17,11 @@ const mockParticipants: Participant[] = [
   { name: 'Alex Thompson', isSpeaking: false, camOn: true, micOn: true, avatar: 'AT' },
 ];
 
+type LayoutMode = "grid" | "speaker" | "presentation";
+
 const VideoGrid: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [layoutMode, setLayoutMode] = React.useState<LayoutMode>("grid");
 
   useGSAP(() => {
     gsap.from('.video-tile', {
@@ -45,24 +48,24 @@ const VideoGrid: React.FC = () => {
 const VideoTile: React.FC<{ participant: Participant }> = ({ participant }) => {
   return (
     <div className={clsx(
-        'video-tile relative bg-bg-2 rounded-2xl border transition-all duration-500 overflow-hidden group',
-        participant.isSpeaking ? 'border-accent shadow-[0_0_30px_rgba(79,255,255,0.1)]' : 'border-white/5'
+        'video-tile relative rounded-[28px] bg-white border transition-all duration-500 overflow-hidden group',
+        participant.isSpeaking ? 'border-indigo-500 ring-2 ring-indigo-500 shadow-[0_0_40px_rgba(79,70,229,0.12)] scale-[1.01] z-10' : 'border-zinc-200 shadow-lg hover:shadow-xl'
     )}>
        {participant.camOn ? (
            <div className="absolute inset-0 bg-zinc-900 flex items-center justify-center">
               <div className="w-16 h-16 rounded-full border-2 border-white/10 opacity-20" />
            </div>
        ) : (
-           <div className="absolute inset-0 bg-gradient-to-br from-bg-3 to-black flex items-center justify-center">
-              <div className="w-24 h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-3xl font-black text-white/20">
+           <div className="absolute inset-0 bg-[#EEF2FF] flex items-center justify-center">
+              <div className="w-24 h-24 rounded-full bg-[#FFFFFF] border border-[#E4E4E7] shadow-sm flex items-center justify-center text-3xl font-black text-[#4F46E5]">
                  {participant.avatar}
               </div>
            </div>
        )}
 
        {/* Overlay Labels */}
-       <div className="absolute bottom-4 left-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
-          <span className="text-[10px] font-black uppercase tracking-widest text-white/90">
+       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-zinc-200 shadow-sm">
+          <span className="text-[10px] font-black uppercase tracking-widest text-zinc-950">
              {participant.name}
           </span>
        </div>
@@ -74,7 +77,7 @@ const VideoTile: React.FC<{ participant: Participant }> = ({ participant }) => {
 
        {/* Speaking Aura */}
        {participant.isSpeaking && (
-           <div className="absolute inset-0 border-2 border-accent animate-pulse pointer-events-none" />
+           <div className="absolute inset-0 rounded-[28px] pointer-events-none" />
        )}
     </div>
   );

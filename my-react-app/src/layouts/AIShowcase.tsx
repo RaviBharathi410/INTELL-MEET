@@ -2,8 +2,8 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { TextPlugin } from 'gsap/TextPlugin';
-import { MOTION } from '../../utils/motion';
-import TiltCard from '../ui/Feature';
+import { MOTION } from '../utils/motion';
+import TiltCard from '../components/ui/Feature';
 
 gsap.registerPlugin(TextPlugin);
 
@@ -157,7 +157,7 @@ const AIShowcase: React.FC = () => {
              </div>
 
              {/* Output View */}
-             <div className="flex flex-col space-y-8 scroll-reveal">
+             <div className="flex flex-col space-y-8 scroll-reveal lg:pt-16">
                 <TiltCard className="summary-card opacity-0 rounded-[3rem]" maxRotation={20} scale={1.1} perspective={700}>
                     <div className="bg-indigo-50 border-2 border-indigo-100 rounded-[3rem] p-12 h-full">
                        <span className="text-accent text-[12px] font-black uppercase tracking-[0.3em] block mb-4 underline decoration-accent/20 underline-offset-8">AI Neural Summary</span>

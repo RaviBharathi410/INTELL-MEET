@@ -45,12 +45,12 @@ const AIPanel: React.FC = () => {
   return (
     <aside 
       ref={panelRef}
-      className="w-[340px] h-full bg-[#030303] border-l border-white/5 flex flex-col pt-8 relative z-50 backdrop-blur-3xl"
+      className="w-[340px] h-full bg-[#FFFFFF] border-l border-[#E4E4E7] flex flex-col pt-8 relative z-50 backdrop-blur-3xl shadow-sm"
     >
       {/* Collapse Toggle */}
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-[#030303] border-y border-l border-white/5 rounded-l-xl flex items-center justify-center text-white/30 hover:text-accent transition-all group"
+        className="absolute -left-8 top-1/2 -translate-y-1/2 w-8 h-16 bg-[#FFFFFF] border-y border-l border-[#E4E4E7] rounded-l-xl flex items-center justify-center text-[#71717A] hover:text-[#4F46E5] transition-all group"
       >
          <ChevronRight className={clsx('transition-transform duration-500', isCollapsed ? 'rotate-180' : 'rotate-0')} />
       </button>
@@ -58,14 +58,14 @@ const AIPanel: React.FC = () => {
       {/* Header */}
       <div className="px-8 mb-12 flex items-center justify-between">
          <div className="flex items-center space-x-3">
-             <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+             <div className="w-8 h-8 rounded-lg bg-[#EEF2FF] border border-[#E4E4E7] flex items-center justify-center text-[#4F46E5] shadow-sm">
                 <Brain size={18} />
              </div>
              <div>
-                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/90">Neural Core</h3>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-[#09090B]">Neural Core</h3>
                 <div className="flex items-center space-x-1.5 mt-1">
-                   <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse shadow-[0_0_10px_#4fffff]" />
-                   <span className="text-[8px] font-black uppercase tracking-widest text-accent/60">LIVE ANALYZING</span>
+                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_#10B981]" />
+                   <span className="text-[8px] font-black uppercase tracking-widest text-emerald-600">LIVE ANALYZING</span>
                 </div>
              </div>
          </div>
@@ -74,25 +74,25 @@ const AIPanel: React.FC = () => {
       <div className="flex-1 overflow-y-auto px-8 space-y-12 pb-12">
          {/* Live Transcript Section */}
          <section>
-            <div className="flex items-center justify-between mb-6 opacity-30 text-[9px] font-black uppercase tracking-[0.2em]">
+            <div className="flex items-center justify-between mb-6 opacity-60 text-[9px] font-black uppercase tracking-[0.2em] text-[#71717A]">
                <span>Spectral Integrity</span>
                <Terminal size={12} />
             </div>
             <div className="space-y-4 max-h-40 overflow-hidden relative">
-               <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#030303] to-transparent pointer-events-none" />
-               <p className="text-[11px] text-white/60 leading-relaxed italic border-l-2 border-white/5 pl-4 py-1">"We need to prioritize node scalability..."</p>
-               <p className="text-[11px] text-white/40 leading-relaxed italic border-l-2 border-white/5 pl-4 py-1">"Agreed. Let's aim for late August."</p>
-               <p className="text-[11px] text-accent font-bold leading-relaxed italic border-l-2 border-accent/40 pl-4 py-1 animate-pulse">"Analyzing strategic decisions..."</p>
+               <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-[#FFFFFF] to-transparent pointer-events-none" />
+               <p className="text-[11px] text-[#09090B] leading-relaxed italic border-l-2 border-[#E4E4E7] pl-4 py-1">"We need to prioritize node scalability..."</p>
+               <p className="text-[11px] text-[#71717A] leading-relaxed italic border-l-2 border-[#E4E4E7] pl-4 py-1">"Agreed. Let's aim for late August."</p>
+               <p className="text-[11px] text-[#4F46E5] font-bold leading-relaxed italic border-l-2 border-[#EEF2FF] pl-4 py-1 animate-pulse">"Analyzing strategic decisions..."</p>
             </div>
          </section>
 
          {/* AI Summary Section */}
          <section>
             <div className="flex items-center space-x-2 mb-6">
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-accent/40">AI Summary</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#4F46E5]">AI Summary</span>
             </div>
-            <div className="p-6 bg-white/[0.02] border border-white/5 rounded-2xl">
-               <p ref={summaryRef} className="text-[12px] text-white/80 leading-relaxed font-medium italic min-h-[40px]">
+            <div className="p-6 bg-[#F8F8FA] border border-[#E4E4E7] rounded-2xl shadow-sm">
+               <p ref={summaryRef} className="text-[12px] text-[#09090B] leading-relaxed font-medium italic min-h-[40px]">
                   Generating neural summary nodes...
                </p>
             </div>
@@ -101,19 +101,19 @@ const AIPanel: React.FC = () => {
          {/* Action Items Section */}
          <section>
             <div className="flex items-center space-x-2 mb-6">
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-accent-2/40">Action Items</span>
+                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-[#71717A]">Action Items</span>
             </div>
             <div className="space-y-4">
                {[
-                 { task: 'Draft Migration Epic', user: 'SJ', color: 'bg-accent/20' },
-                 { task: 'Scale Auth Cluster', user: 'MC', color: 'bg-accent-2/20' },
+                 { task: 'Draft Migration Epic', user: 'SJ', color: 'bg-[#EEF2FF] text-[#4F46E5]' },
+                 { task: 'Scale Auth Cluster', user: 'MC', color: 'bg-[#F8F8FA] text-[#71717A]' },
                ].map((item, i) => (
-                 <div key={i} className="flex items-center space-x-4 p-4 bg-white/[0.01] border border-white/5 rounded-xl hover:bg-white/[0.03] transition-all cursor-pointer group">
-                    <CheckCircle2 size={16} className="text-white/10 group-hover:text-accent transition-colors" />
+                 <div key={i} className="flex items-center space-x-4 p-4 bg-[#FFFFFF] border border-[#E4E4E7] rounded-xl hover:bg-[#F8F8FA] shadow-sm transition-all cursor-pointer group">
+                    <CheckCircle2 size={16} className="text-[#E4E4E7] group-hover:text-[#4F46E5] transition-colors" />
                     <div className="flex-1">
-                       <p className="text-[11px] font-bold text-white/80">{item.task}</p>
+                       <p className="text-[11px] font-bold text-[#09090B]">{item.task}</p>
                     </div>
-                    <div className={clsx('w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black text-white/40', item.color)}>
+                    <div className={clsx('w-6 h-6 rounded-full flex items-center justify-center text-[8px] font-black', item.color)}>
                        {item.user}
                     </div>
                  </div>

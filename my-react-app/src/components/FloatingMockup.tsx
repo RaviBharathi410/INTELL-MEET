@@ -152,7 +152,7 @@ const FloatingMockup: React.FC = () => {
               ].map((item, i) => (
                 <div key={i} className={`group relative h-52 rounded-[2.5rem] border ${item.color} p-8 flex flex-col justify-between transition-all duration-500 hover:scale-[1.02] hover:shadow-xl`}>
                   <div className="w-12 h-12 rounded-2xl bg-white border border-zinc-100 flex items-center justify-center shadow-sm">
-                    <span className="text-zinc-400 font-black">0{i+1}</span>
+                    <span className="text-zinc-400 font-black">0{i + 1}</span>
                   </div>
                   <div>
                     <h4 className="text-zinc-950 font-black text-lg tracking-tight mb-1">{item.name}</h4>
@@ -191,10 +191,10 @@ const FloatingMockup: React.FC = () => {
 
         {/* Floating Accent Badges */}
         <div className="absolute top-1/4 -left-16 px-10 py-6 bg-white border border-zinc-200 rounded-[2rem] shadow-2xl animate-float">
-           <span className="text-[14px] font-black text-zinc-950 uppercase tracking-tighter italic">End-to-End Encryption</span>
+          <span className="text-[14px] font-black text-zinc-950 uppercase tracking-tighter italic">End-to-End Encryption</span>
         </div>
         <div className="absolute bottom-1/4 -right-16 px-10 py-6 bg-white border border-zinc-200 rounded-[2rem] shadow-2xl animate-float" style={{ animationDelay: '2s' }}>
-           <span className="text-[14px] font-black text-accent uppercase tracking-tighter italic">Phase Shift: Enabled</span>
+          <span className="text-[14px] font-black text-accent uppercase tracking-tighter italic">Phase Shift: Enabled</span>
         </div>
       </div>
     </section>

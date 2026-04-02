@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 
@@ -12,53 +13,60 @@ interface LogoRevealProps {
  */
 const LogoReveal: React.FC<LogoRevealProps> = ({ onComplete }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const hasPlayed = useRef(sessionStorage.getItem('logoRevealed') === 'true');
+  const shouldPlay = !hasPlayed.current && location.pathname === '/';
+
+  React.useEffect(() => {
+    if (!shouldPlay) {
+      onComplete();
+    }
+  }, [onComplete, shouldPlay]);
 
   useGSAP(() => {
+    if (!shouldPlay) return;
+
     const tl = gsap.timeline({
       onComplete: () => {
+        sessionStorage.setItem('logoRevealed', 'true');
         onComplete();
-        // Faster fade out of the overlay
-        gsap.to(containerRef.current, { opacity: 0, duration: 0.4, display: 'none' });
+        // Consolidate: Final hide
+        gsap.set(containerRef.current, { display: 'none' });
       }
     });
 
-    // 1. Initial State: Brighter white
-    gsap.set('.logo-group', { opacity: 1, scale: 1 });
-
-    // 2. SVG robot icon draws in via stroke-dashoffset (Brilliant White)
+    // 1. SVG robot icon draws in via stroke-dashoffset (Brilliant White)
     tl.fromTo('.robot-path', 
       { strokeDashoffset: 1000, strokeDasharray: 1000 },
       { strokeDashoffset: 0, duration: 1.8, ease: 'power2.inOut' },
       0.1
     );
 
-    // 3. Icon fill floods in from bottom (Solid white)
+    // 2. Icon fill floods in from bottom (Solid white)
     tl.fromTo('.robot-fill',
       { clipPath: 'inset(100% 0% 0% 0%)' },
       { clipPath: 'inset(0% 0% 0% 0%)', duration: 1, ease: 'expo.inOut' },
       0.8
     );
 
-    // 4. "IntellMeet" wordmark letter-by-letter reveal
+    // 3. "IntellMeet" wordmark reveal
     tl.fromTo('.wordmark-char',
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.5, stagger: 0.03, ease: 'back.out(1.7)' },
+      { opacity: 0 },
+      { opacity: 1, duration: 0.5, stagger: 0.03, ease: 'power2.inOut' },
       1.0
     );
 
-    // 5. CRITICAL FIX: Smoother Blur Exit to avoid 'struck' feeling
-    tl.to('.logo-group', {
-        scale: 0.1,
-        opacity: 0,
-        filter: 'blur(20px)',
-        duration: 1.5,
-        ease: 'power2.inOut'
+    // 4. PURE FADE OUT: Consolidate exit to a single container fade
+    // No upward sliding / translateY movement
+    tl.to(containerRef.current, {
+      opacity: 0,
+      duration: 0.8,
+      ease: "power2.out"
     }, 2.2);
 
-    // 6. Black overlay fades with longer transition
-    tl.to(containerRef.current, { backgroundColor: 'transparent', duration: 1.2 }, 2.2);
-
   }, { scope: containerRef });
+
+  if (!shouldPlay) return null;
 
   return (
     <div 
