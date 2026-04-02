@@ -132,7 +132,7 @@ const HorizontalDesktop: React.FC = () => {
   }, { scope: triggerRef });
 
   return (
-    <div ref={triggerRef} className="relative overflow-hidden bg-white">
+    <div ref={triggerRef} className="relative bg-white w-full h-screen overflow-hidden">
       {/* Background Floating Blobs */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-50">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] animate-pulse" />

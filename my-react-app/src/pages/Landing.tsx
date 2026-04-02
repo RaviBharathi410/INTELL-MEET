@@ -22,8 +22,7 @@ const Landing: React.FC = () => {
       setTimeout(() => {
         const el = document.getElementById(id);
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 100;
-          window.scrollTo({ top: y, behavior: 'smooth' });
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 100);
     }
@@ -38,11 +37,11 @@ const Landing: React.FC = () => {
       <LogoReveal onComplete={() => setRevealComplete(true)} />
       <Hero />
       <div id="ecosystem"><HorizontalScroll /></div>
-      <div id="security"><FloatingMockup /></div>
+      <section id="security" className="scroll-mt-24"><FloatingMockup /></section>
       <StatsBar />
-      <div id="strategic"><Features /></div>
+      <section id="strategic" className="scroll-mt-24"><Features /></section>
       <AIShowcase />
-      <div id="enterprise"><TechMarquee /><CTABanner /></div>
+      <section id="enterprise" className="scroll-mt-24"><TechMarquee /><CTABanner /></section>
       <Footer />
     </div>
   );

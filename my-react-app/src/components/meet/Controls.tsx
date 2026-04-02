@@ -6,15 +6,21 @@ import {
   CircleDot, 
   Smile, 
   MoreVertical, 
-  LogOut 
+  LogOut,
+  Brain
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useMeetingStore } from '../../store/useMeetingStore';
 
-const Controls: React.FC = () => {
-  const [micOn, setMicOn] = useState(true);
-  const [camOn, setCamOn] = useState(true);
-  const [isRecording, setIsRecording] = useState(false);
+const Controls: React.FC<{ onExit?: () => void }> = ({ onExit }) => {
+  const { 
+    micOn, toggleMic, 
+    camOn, toggleCam, 
+    isRecording, toggleRecording,
+    isAIPanelOpen, toggleAIPanel
+  } = useMeetingStore();
+  
   const [emojis, setEmojis] = useState<{ id: number, emoji: string }[]>([]);
 
   const triggerEmoji = (emoji: string) => {
@@ -26,7 +32,7 @@ const Controls: React.FC = () => {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 w-full z-[1002] flex justify-center pb-10 pointer-events-none">
+    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1002] flex justify-center pointer-events-none">
        {/* Emoji Float Layer */}
        <div className="absolute inset-x-0 bottom-full pointer-events-none h-[400px]">
           <AnimatePresence>
@@ -45,23 +51,23 @@ const Controls: React.FC = () => {
           </AnimatePresence>
        </div>
 
-       <div className="relative rounded-full bg-white border border-zinc-200 shadow-xl backdrop-blur-xl p-3 flex items-center space-x-4 pointer-events-auto">
+       <div className="relative rounded-full bg-[#FFFFFF]/90 border border-[#FFFFFF]/20 shadow-[0_12px_30px_rgba(0,0,0,0.04)] backdrop-blur-xl p-3 flex items-center space-x-4 pointer-events-auto transition-all">
           {/* Controls Group */}
-          <div className="flex items-center space-x-3 px-3 border-r border-zinc-200">
+          <div className="flex items-center space-x-3 px-3 border-r border-[#E4E4E7]">
              <button 
-               onClick={() => setMicOn(!micOn)}
+               onClick={toggleMic}
                className={clsx(
-                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-90',
-                 micOn ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950' : 'bg-red-500 text-white'
+                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-95 shadow-sm',
+                 micOn ? 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]' : 'bg-[#EF4444] text-[#FFFFFF]'
                )}
              >
                 {micOn ? <Mic size={20} /> : <MicOff size={20} />}
              </button>
              <button 
-               onClick={() => setCamOn(!camOn)}
+               onClick={toggleCam}
                className={clsx(
-                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-90',
-                 camOn ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-950' : 'bg-red-500 text-white'
+                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-95 shadow-sm',
+                 camOn ? 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]' : 'bg-[#EF4444] text-[#FFFFFF]'
                )}
              >
                 {camOn ? <Video size={20} /> : <VideoOff size={20} />}
@@ -69,25 +75,34 @@ const Controls: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3 px-3">
-             <button className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group">
-                <MonitorUp size={20} className="group-hover:translate-y-[-2px] transition-transform" />
+             <button className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC] flex items-center justify-center transition-all active:scale-95 shadow-sm group">
+                <MonitorUp size={20} className="group-hover:-translate-y-0.5 transition-transform" />
              </button>
              <button 
-               onClick={() => setIsRecording(!isRecording)}
+               onClick={toggleRecording}
                className={clsx(
-                 'w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 flex items-center justify-center transition-all active:scale-90 shadow-sm group',
-                 isRecording ? 'text-red-500' : 'text-zinc-950'
+                 'w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] flex items-center justify-center transition-all active:scale-95 shadow-sm group hover:text-[#EF4444]',
+                 isRecording ? 'text-[#EF4444] ring-2 ring-[#EF4444]/30' : 'text-[#111111]'
                )}
              >
                 <CircleDot size={20} className={clsx(isRecording && 'animate-pulse')} />
              </button>
              <button 
-                className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group relative"
+                onClick={toggleAIPanel}
+                className={clsx(
+                  'w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm group',
+                  isAIPanelOpen ? 'bg-[#5850EC] text-[#FFFFFF] shadow-[0_4px_15px_rgba(88,80,236,0.3)]' : 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]'
+                )}
+             >
+                <Brain size={20} className={clsx(isAIPanelOpen && 'animate-pulse')} />
+             </button>
+             <button 
+                className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC] flex items-center justify-center transition-all active:scale-95 shadow-sm group relative"
                 onClick={() => triggerEmoji('🔥')}
              >
                 <Smile size={20} className="group-hover:scale-110 transition-transform" />
              </button>
-             <button className="w-12 h-12 rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-950 flex items-center justify-center transition-all active:scale-90 shadow-sm group">
+             <button className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#6B6B78] flex items-center justify-center transition-all active:scale-95 shadow-sm group">
                 <MoreVertical size={20} />
              </button>
           </div>
@@ -95,8 +110,8 @@ const Controls: React.FC = () => {
           {/* End Call Separator */}
           <div className="pl-3">
              <button 
-               className="h-12 px-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center space-x-3 transition-colors active:scale-95 shadow-xl shadow-red-500/10 group"
-               onClick={() => window.location.href = '/'}
+               className="h-12 px-6 bg-[#EF4444] hover:bg-red-600 text-[#FFFFFF] rounded-full flex items-center space-x-3 transition-colors active:scale-95 shadow-[0_4px_15px_rgba(239,68,68,0.2)] group"
+               onClick={() => onExit ? onExit() : window.location.href = '/'}
              >
                 <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
                 <span className="text-[10px] font-black uppercase tracking-widest hidden md:inline">Exit Session</span>
@@ -106,9 +121,9 @@ const Controls: React.FC = () => {
 
        {/* Floating REC tag */}
         {isRecording && (
-           <div className="absolute top-[-80px] px-4 py-2 bg-[#FFFFFF] border border-red-500/30 rounded-full flex items-center space-x-2 shadow-xl animate-float">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[9px] font-mono font-black text-red-500 tracking-[0.2em] uppercase">Recording Node Status</span>
+           <div className="absolute top-[-50px] px-4 py-2 bg-[#FFFFFF]/90 backdrop-blur-md border border-[#EF4444]/30 rounded-full flex items-center space-x-2 shadow-xl animate-float">
+                <div className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse" />
+                <span className="text-[9px] font-mono font-black text-[#EF4444] tracking-[0.2em] uppercase">Recording Node Status</span>
            </div>
        )}
     </div>

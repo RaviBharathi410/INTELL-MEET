@@ -1,11 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #000000;
+  --color-primary: #5850EC;
   --color-accent: #FFFFFF;
-  --color-secondary: #888888;
+  --color-secondary: #6B6B78;
   --color-neutral: #333333;
   --color-success: #10B981;
+  
+  --color-bg: #F8F8FC;
+  --color-text-primary: #111111;
+  --color-text-secondary: #6B6B78;
+  --color-text-muted: #9A9AA5;
+
+  --radius-card: 24px;
 
   --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
@@ -58,4 +65,12 @@
   .perspective-1000 { perspective: 1000px; }
   .preserve-3d { transform-style: preserve-3d; }
   .backface-hidden { backface-visibility: hidden; }
+
+  .btn-typography {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
 }

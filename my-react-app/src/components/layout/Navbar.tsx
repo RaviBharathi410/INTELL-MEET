@@ -63,17 +63,14 @@ const Navbar: React.FC = () => {
                 href={`/#${link.toLowerCase()}`}
                 onClick={(e) => {
                   const targetId = link.toLowerCase();
-                  if (location.pathname !== '/') {
-                    // Let the native href routing handle if we're on a different page
-                    return;
-                  }
-                  
+                  if (location.pathname !== '/') return;
+
                   e.preventDefault();
                   const target = document.getElementById(targetId);
-                  if (target) {
-                    const y = target.getBoundingClientRect().top + window.scrollY - 100;
-                    window.scrollTo({ top: y, behavior: 'smooth' });
-                  }
+                  target?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start',
+                  });
                 }}
                 className="text-[12px] font-black uppercase tracking-[0.4em] text-zinc-400 hover:text-zinc-950 transition-colors"
               >

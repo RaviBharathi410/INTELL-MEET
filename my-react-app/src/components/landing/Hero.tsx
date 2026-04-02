@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,6 +11,7 @@ const Hero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const navigate = useNavigate();
 
   // Animated Mesh Background — gated by IntersectionObserver
   useLayoutEffect(() => {
@@ -138,10 +140,19 @@ const Hero: React.FC = () => {
           </h2>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
-            <button className="px-14 py-6 bg-accent text-white font-black rounded-full shadow-[0_30px_60px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[13px]">
-              Access Alpha Terminal
+            <button 
+              onClick={() => navigate('/access')}
+              className="px-14 py-6 bg-accent text-white font-black rounded-full shadow-[0_30px_60px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[13px]"
+            >
+              Start Meeting
             </button>
-            <button className="px-14 py-6 bg-zinc-100 border border-zinc-200 text-zinc-900 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[13px]">
+            <button 
+              onClick={() => {
+                const el = document.getElementById('ecosystem');
+                el?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="px-14 py-6 bg-zinc-100 border border-zinc-200 text-zinc-900 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[13px]"
+            >
               Platform Tour
             </button>
           </div>
