@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { MicOff, VideoOff, Mic, Pin, PinOff, MonitorUp, Crown, Hand } from 'lucide-react';

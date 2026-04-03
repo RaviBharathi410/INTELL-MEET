@@ -4,7 +4,7 @@ import {
   AlignLeft, Mic, MicOff, Video, VideoOff,
   Send, Download, Bold, Italic, List as ListIcon, Heading,
   Upload, UserX,
-  CheckSquare, Clock, Plus, Trash2, Crown,
+  CheckSquare, Clock, Crown,
   Check, Hand,
 } from 'lucide-react';
 import { clsx } from 'clsx';

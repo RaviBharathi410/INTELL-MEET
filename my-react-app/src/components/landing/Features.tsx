@@ -1,7 +1,4 @@
-import React, { useRef } from 'react';
-import gsap from 'gsap';
-import { useGSAP } from '@gsap/react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import React from 'react';
 import { 
   Video, 
   BrainCircuit, 
@@ -11,8 +8,6 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import TiltCard from '../ui/Feature';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const features = [
   { 
@@ -54,16 +49,8 @@ const features = [
 ];
 
 const Features: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-
-  useGSAP(() => {
-    // Animations removed per user request
-  }, { scope: containerRef });
-
   return (
     <section 
-      ref={containerRef}
       className="py-24 md:py-32 px-6 md:px-10 bg-white relative overflow-visible select-none"
       style={{ perspective: '1000px' }}
     >
@@ -72,7 +59,6 @@ const Features: React.FC = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10 w-full">
         <h2 
-          ref={titleRef}
           className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 text-center mb-16 md:mb-24 tracking-[-0.05em] leading-none"
         >
           Built for spectral scale.
