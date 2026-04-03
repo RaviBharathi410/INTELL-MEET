@@ -14,7 +14,17 @@ import LogoReveal from '../components/LogoReveal';
 
 const Landing: React.FC = () => {
   const location = useLocation();
-  const [revealComplete, setRevealComplete] = React.useState(sessionStorage.getItem('logoRevealed') === 'true');
+  const alreadyPlayed = sessionStorage.getItem('logoRevealed') === 'true';
+  const [revealComplete, setRevealComplete] = React.useState(alreadyPlayed);
+
+  // Safety fallback — if LogoReveal fails to call onComplete, reveal after 4s
+  useEffect(() => {
+    if (revealComplete) return;
+    const fallback = setTimeout(() => {
+      setRevealComplete(true);
+    }, 4000);
+    return () => clearTimeout(fallback);
+  }, [revealComplete]);
 
   useEffect(() => {
     if (location.hash && revealComplete) {
@@ -34,7 +44,7 @@ const Landing: React.FC = () => {
         "scroll-container bg-white transition-opacity duration-1000",
         revealComplete ? "opacity-100" : "opacity-0"
     )}>
-      <LogoReveal onComplete={() => setRevealComplete(true)} />
+      {!alreadyPlayed && <LogoReveal onComplete={() => setRevealComplete(true)} />}
       <Hero />
       <div id="ecosystem"><HorizontalScroll /></div>
       <section id="security" className="scroll-mt-24"><FloatingMockup /></section>
