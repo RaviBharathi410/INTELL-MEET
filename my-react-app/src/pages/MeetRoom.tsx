@@ -19,7 +19,7 @@ const MeetRoom: React.FC = () => {
     <div className="h-screen bg-[#F5F5F7] text-zinc-950 flex flex-col overflow-hidden font-body">
       <MeetNavbar />
 
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden relative items-stretch">
         {/* Sidebar — collapsible */}
         <AnimatePresence mode="wait">
           {isSidebarOpen && (

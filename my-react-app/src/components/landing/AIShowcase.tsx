@@ -113,13 +113,13 @@ const AIShowcase: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="py-20 md:py-40 lg:py-60 px-6 sm:px-10 bg-white flex flex-col items-center relative overflow-hidden"
+      className="py-16 md:py-24 lg:py-32 px-6 sm:px-10 bg-white flex flex-col items-center relative overflow-hidden"
     >
       {/* Floating Background Blooms */}
       <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
       <div className="max-w-7xl w-full relative z-10">
-         <div className="text-center mb-16 md:mb-28 lg:mb-40 scroll-reveal">
+         <div className="text-center mb-12 md:mb-20 scroll-reveal">
             <h2 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 mb-10 tracking-[-0.05em] leading-none">
                Core Intelligence.
             </h2>
