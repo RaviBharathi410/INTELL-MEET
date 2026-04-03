@@ -212,7 +212,7 @@ const AIPanel: React.FC = () => {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-6 space-y-8 pb-40 pt-6 custom-scrollbar min-h-0 bg-white">
+            <div data-lenis-prevent className="flex-1 overflow-y-auto px-6 space-y-8 pb-40 pt-6 custom-scrollbar min-h-0 bg-white">
 
               {/* Sentiment */}
               <section>

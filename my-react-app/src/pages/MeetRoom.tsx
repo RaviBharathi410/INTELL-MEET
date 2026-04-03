@@ -28,7 +28,7 @@ const MeetRoom: React.FC = () => {
               animate={{ width: sidebarWidth, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="flex-shrink-0 overflow-hidden hidden md:block"
+              className="flex-shrink-0 overflow-hidden hidden md:block h-full self-stretch"
               style={{ width: sidebarWidth }}
             >
               <Sidebar />

@@ -475,7 +475,7 @@ const Sidebar: React.FC = () => {
   return (
     <aside 
       ref={sidebarRef}
-      className="h-full bg-white border-r border-zinc-200 flex flex-col relative z-20 flex-shrink-0"
+      className="h-full bg-white border-r border-zinc-200 flex flex-col relative z-20 flex-shrink-0 self-stretch"
       style={{ width: sidebarWidth }}
     >
       {/* Resizer Handle */}
@@ -510,7 +510,7 @@ const Sidebar: React.FC = () => {
           </div>
         </nav>
 
-        <div className="flex-1 overflow-hidden px-5 pb-6 flex flex-col h-full bg-white">
+        <div data-lenis-prevent className="flex-1 overflow-hidden px-5 pb-6 flex flex-col h-full bg-white">
           <AnimatePresence mode="wait">
             <motion.div
               key={sidebarTab}
