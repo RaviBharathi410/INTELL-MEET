@@ -39,22 +39,27 @@ const Landing: React.FC = () => {
   }, [location, revealComplete]);
 
   return (
-    // scroll-container gives GSAP correct offset + position: relative from CSS
-    <div className={clsx(
-        "scroll-container bg-white transition-opacity duration-1000",
-        revealComplete ? "opacity-100" : "opacity-0"
-    )}>
+    <>
+      {/* LogoReveal MUST be outside the opacity-controlled div —
+          CSS opacity:0 on a parent hides ALL children, including fixed ones */}
       <LogoReveal onComplete={() => setRevealComplete(true)} />
-      <Hero />
-      <div id="ecosystem"><HorizontalScroll /></div>
-      <section id="security" className="scroll-mt-24"><FloatingMockup /></section>
-      <StatsBar />
-      <section id="strategic" className="scroll-mt-24"><Features /></section>
-      <section id="intelligence" className="scroll-mt-24"><AIShowcase /></section>
-      <TechMarquee />
-      <section id="enterprise" className="scroll-mt-24"><CTABanner /></section>
-      <Footer />
-    </div>
+
+      {/* scroll-container gives GSAP correct offset + position: relative from CSS */}
+      <div className={clsx(
+          "scroll-container bg-white transition-opacity duration-1000",
+          revealComplete ? "opacity-100" : "opacity-0"
+      )}>
+        <Hero />
+        <div id="ecosystem"><HorizontalScroll /></div>
+        <section id="security" className="scroll-mt-[46px]"><FloatingMockup /></section>
+        <StatsBar />
+        <section id="strategic" className="scroll-mt-24"><Features /></section>
+        <section id="intelligence" className="scroll-mt-24"><AIShowcase /></section>
+        <TechMarquee />
+        <section id="enterprise" className="scroll-mt-24"><CTABanner /></section>
+        <Footer />
+      </div>
+    </>
   );
 };
 
