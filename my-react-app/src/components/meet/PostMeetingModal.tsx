@@ -1,8 +1,10 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, FileText, Share2, CheckCircle2, Download, BarChart2, ShieldCheck } from 'lucide-react';
+import { X, FileText, Share2, CheckCircle2, Download, BarChart2, ShieldCheck, Mail } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useMeetingStore } from '../../store/useMeetingStore';
+import jsPDF from 'jspdf';
+import { Document, Packer, Paragraph, TextRun, HeadingLevel } from 'docx';
 
 interface Props {
   isOpen: boolean;
@@ -10,144 +12,299 @@ interface Props {
 }
 
 const PostMeetingModal: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { aiSummary, actionItems, timeline } = useMeetingStore();
+  const { aiSummary, actionItems, timeline, meetingTitle } = useMeetingStore();
 
   const mockAnalytics = {
     talkRatio: {
-        'Dr. Sarah Jameson': 45,
-        'Michael Chen': 25,
-        'Alex Thompson': 20,
-        'Elena Rodriguez': 10
+      'Dr. Sarah Jameson': 45,
+      'Michael Chen': 25,
+      'Alex Thompson': 20,
+      'Elena Rodriguez': 10,
     },
     engagementScore: 94,
     decisionsMade: timeline.filter(t => t.type === 'decision').length,
-    confidence: {
-        summary: 91,
-        sentiment: 88,
-        tasks: 95
-    }
+    confidence: { summary: 91, sentiment: 88, tasks: 95 },
   };
+
+  // ── Download PDF ─────────────────────────────────────────────────────────────
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF();
+    const lineHeight = 8;
+    let y = 20;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.text('Meeting Report', 20, y);
+    y += lineHeight * 2;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(`Title: ${meetingTitle}`, 20, y); y += lineHeight;
+    doc.text(`Generated: ${new Date().toLocaleString()}`, 20, y); y += lineHeight * 2;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Executive Summary', 20, y); y += lineHeight;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    const summaryLines = doc.splitTextToSize(aiSummary, 170);
+    doc.text(summaryLines, 20, y);
+    y += summaryLines.length * lineHeight + lineHeight;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Action Items', 20, y); y += lineHeight;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    actionItems.forEach((item, i) => {
+      doc.text(`${i + 1}. [${item.completed ? 'x' : ' '}] ${item.task} — ${item.assignee || 'Unassigned'}`, 20, y);
+      y += lineHeight;
+    });
+
+    y += lineHeight;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.text('Timeline', 20, y); y += lineHeight;
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    timeline.forEach(e => {
+      doc.text(`${new Date(e.timestamp).toLocaleTimeString()} — ${e.label}`, 20, y);
+      y += lineHeight;
+    });
+
+    doc.save(`meeting-report-${Date.now()}.pdf`);
+  };
+
+  // ── Download DOCX ────────────────────────────────────────────────────────────
+  const handleDownloadDOCX = async () => {
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({ text: 'Meeting Report', heading: HeadingLevel.TITLE }),
+          new Paragraph({ text: meetingTitle, heading: HeadingLevel.HEADING_1 }),
+          new Paragraph({ text: `Generated: ${new Date().toLocaleString()}` }),
+          new Paragraph({ text: '' }),
+          new Paragraph({ text: 'Executive Summary', heading: HeadingLevel.HEADING_2 }),
+          new Paragraph({ children: [new TextRun(aiSummary)] }),
+          new Paragraph({ text: '' }),
+          new Paragraph({ text: 'Action Items', heading: HeadingLevel.HEADING_2 }),
+          ...actionItems.map((item, i) =>
+            new Paragraph({ text: `${i + 1}. [${item.completed ? 'x' : ' '}] ${item.task} — ${item.assignee || 'Unassigned'}` })
+          ),
+          new Paragraph({ text: '' }),
+          new Paragraph({ text: 'Timeline', heading: HeadingLevel.HEADING_2 }),
+          ...timeline.map(e =>
+            new Paragraph({ text: `${new Date(e.timestamp).toLocaleTimeString()} — ${e.label}` })
+          ),
+        ],
+      }],
+    });
+
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `meeting-report-${Date.now()}.docx`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // ── Send Email ───────────────────────────────────────────────────────────────
+  const handleSendEmail = () => {
+    const subject = encodeURIComponent(`Meeting Summary — ${meetingTitle}`);
+    const body = encodeURIComponent(
+      `Hi,\n\nHere is the summary from our meeting: ${meetingTitle}\n\n` +
+      `SUMMARY\n${aiSummary}\n\n` +
+      `ACTION ITEMS\n${actionItems.map((a, i) => `${i + 1}. ${a.task} — ${a.assignee}`).join('\n')}\n\n` +
+      `Generated by IntellMeet AI`
+    );
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
+  // ── Integration URLs ──────────────────────────────────────────────────────────
+  const INTEGRATIONS = [
+    {
+      name: 'Notion',
+      url: `https://notion.so/new?title=${encodeURIComponent(meetingTitle)}&summary=${encodeURIComponent(aiSummary)}`,
+      color: 'hover:text-zinc-900 hover:border-zinc-400',
+    },
+    {
+      name: 'Jira',
+      url: `https://id.atlassian.com/login?continue=${encodeURIComponent(`https://jira.atlassian.com/secure/CreateIssue.jspa?summary=${encodeURIComponent(meetingTitle)}`)}`,
+      color: 'hover:text-blue-600 hover:border-blue-300',
+    },
+    {
+      name: 'Slack',
+      url: `https://slack.com/oauth/v2/authorize?client_id=&scope=&state=${encodeURIComponent(aiSummary)}`,
+      color: 'hover:text-purple-600 hover:border-purple-300',
+    },
+  ];
 
   return (
     <AnimatePresence>
       {isOpen && (
         <React.Fragment>
-          {/* Backdrop */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-[#111111]/40 backdrop-blur-sm z-[100]"
             onClick={onClose}
           />
 
-          {/* Modal */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-[#FFFFFF] rounded-3xl shadow-2xl z-[101] overflow-hidden flex flex-col max-h-[90vh]"
+            transition={{ type: 'spring', bounce: 0, duration: 0.5 }}
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-white rounded-3xl shadow-2xl z-[101] overflow-hidden flex flex-col max-h-[90vh]"
           >
-             {/* Header */}
-             <div className="px-8 py-6 border-b border-[#E4E4E7] flex items-center justify-between bg-[#F8F8FC]">
-                <div className="flex items-center space-x-3">
-                   <div className="w-10 h-10 rounded-xl bg-[#5850EC] text-white flex items-center justify-center shadow-lg shadow-[#5850EC]/30">
-                      <FileText size={20} />
-                   </div>
-                   <div>
-                       <h2 className="text-xl font-bold text-[#111111]">Meeting Report Generated</h2>
-                       <p className="text-xs text-[#6B6B78] font-medium mt-1">Project Nexus Planning • 4 Participants • {mockAnalytics.engagementScore}% Engagement</p>
-                   </div>
+            {/* Header */}
+            <div className="px-8 py-6 border-b border-zinc-200 flex items-center justify-between bg-[#F8F8FC]">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-[#5850EC] text-white flex items-center justify-center shadow-lg shadow-[#5850EC]/30">
+                  <FileText size={20} />
                 </div>
-                <div className="flex items-center space-x-3">
-                   <button className="btn-typography flex items-center space-x-2 px-6 py-3 rounded-xl bg-[#111111] text-white hover:bg-[#111111]/80 transition-all">
-                      <Share2 size={16} />
-                      <span>Export Hub</span>
-                   </button>
-                   <button onClick={onClose} className="w-12 h-12 rounded-xl bg-[#FFFFFF] border border-[#E4E4E7] flex items-center justify-center text-[#6B6B78] hover:text-[#111111] hover:bg-[#F8F8FC] transition-all">
-                      <X size={20} />
-                   </button>
+                <div>
+                  <h2 className="text-xl font-bold text-zinc-900">Meeting Report Generated</h2>
+                  <p className="text-xs text-zinc-500 font-medium mt-1">
+                    {meetingTitle} · 4 Participants · {mockAnalytics.engagementScore}% Engagement
+                  </p>
                 </div>
-             </div>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button className="btn-typography flex items-center space-x-2 px-6 py-3 rounded-xl bg-zinc-900 text-white hover:bg-zinc-800 transition-all">
+                  <Share2 size={16} />
+                  <span>Export Hub</span>
+                </button>
+                <button onClick={onClose} className="w-12 h-12 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-zinc-500 hover:text-zinc-900 hover:bg-zinc-50 transition-all">
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
 
-             {/* Content Scroll Area */}
-             <div className="p-8 overflow-y-auto custom-scrollbar flex-1 flex gap-8">
-                
-                {/* Left Column: AI Trust & Analytics */}
-                <div className="w-1/3 flex flex-col space-y-6 flex-shrink-0">
-                    <section>
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#9A9AA5] mb-4 flex items-center"><ShieldCheck size={12} className="mr-2"/> AI Confidence</h3>
-                        <div className="space-y-3">
-                           <div className="flex items-center justify-between text-sm">
-                               <span className="text-[#6B6B78] font-medium">Summary Accuracy</span>
-                               <span className="text-[#111111] font-bold">{mockAnalytics.confidence.summary}%</span>
-                           </div>
-                           <div className="w-full h-1.5 bg-[#F8F8FC] rounded-full overflow-hidden border border-[#E4E4E7]">
-                               <div className="h-full bg-[#10B981] rounded-full" style={{ width: `${mockAnalytics.confidence.summary}%` }} />
-                           </div>
-
-                           <div className="flex items-center justify-between text-sm mt-4">
-                               <span className="text-[#6B6B78] font-medium">Task Extraction</span>
-                               <span className="text-[#111111] font-bold">{mockAnalytics.confidence.tasks}%</span>
-                           </div>
-                           <div className="w-full h-1.5 bg-[#F8F8FC] rounded-full overflow-hidden border border-[#E4E4E7]">
-                               <div className="h-full bg-[#10B981] rounded-full" style={{ width: `${mockAnalytics.confidence.tasks}%` }} />
-                           </div>
+            {/* Content */}
+            <div className="p-8 overflow-y-auto custom-scrollbar flex-1 flex gap-8">
+              {/* Left: Analytics */}
+              <div className="w-1/3 flex flex-col space-y-6 flex-shrink-0">
+                <section>
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 flex items-center">
+                    <ShieldCheck size={12} className="mr-2" /> AI Confidence
+                  </h3>
+                  <div className="space-y-3">
+                    {[
+                      { label: 'Summary Accuracy', val: mockAnalytics.confidence.summary },
+                      { label: 'Task Extraction', val: mockAnalytics.confidence.tasks },
+                      { label: 'Sentiment', val: mockAnalytics.confidence.sentiment },
+                    ].map(({ label, val }) => (
+                      <div key={label}>
+                        <div className="flex items-center justify-between text-sm mb-1">
+                          <span className="text-zinc-500 font-medium">{label}</span>
+                          <span className="text-zinc-900 font-bold">{val}%</span>
                         </div>
-                    </section>
-
-                    <section className="pt-4 border-t border-[#E4E4E7]">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest text-[#9A9AA5] mb-4 flex items-center"><BarChart2 size={12} className="mr-2"/> Speaker Dominance</h3>
-                        <div className="space-y-4">
-                            {Object.entries(mockAnalytics.talkRatio).map(([name, ratio]) => (
-                                <div key={name}>
-                                    <div className="flex justify-between text-xs mb-1">
-                                        <span className="text-[#111111] font-medium">{name}</span>
-                                        <span className="text-[#6B6B78]">{ratio}%</span>
-                                    </div>
-                                    <div className="w-full h-1 bg-[#F8F8FC] rounded-full overflow-hidden">
-                                        <div className="h-full bg-[#5850EC]" style={{ width: `${ratio}%` }} />
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden border border-zinc-200">
+                          <div className="h-full bg-[#10B981] rounded-full" style={{ width: `${val}%` }} />
                         </div>
-                    </section>
-                </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
 
-                {/* Right Column: Summaries & Exports */}
-                <div className="w-2/3 flex flex-col space-y-6">
-                    <section className="p-5 bg-[#F8F8FC] border border-[#E4E4E7] rounded-2xl relative overflow-hidden group hover:border-[#5850EC]/30 transition-colors">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-[#5850EC]/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none" />
-                        <h3 className="text-sm font-bold text-[#111111] mb-3">Executive Summary</h3>
-                        <p className="text-sm text-[#6B6B78] leading-relaxed italic">"{aiSummary}"</p>
-                    </section>
-                    
-                    <section>
-                         <h3 className="text-sm font-bold text-[#111111] mb-3">Action Items Extracted ({actionItems.length})</h3>
-                         <div className="grid grid-cols-2 gap-3">
-                            {actionItems.map(item => (
-                                <div key={item.id} className={clsx("p-3 rounded-xl border flex items-start space-x-3", item.completed ? 'bg-[#10B981]/5 border-[#10B981]/30' : 'bg-[#FFFFFF] border-[#E4E4E7]')}>
-                                   <CheckCircle2 size={16} className={item.completed ? "text-[#10B981] flex-shrink-0" : "text-[#E4E4E7] flex-shrink-0"} />
-                                   <div>
-                                       <p className="text-xs font-bold text-[#111111] mb-1 leading-snug">{item.task}</p>
-                                       <span className="text-[10px] text-[#6B6B78] font-medium flex items-center"><div className="w-4 h-4 rounded-full bg-[#F8F8FC] border border-[#E4E4E7] flex items-center justify-center mr-1 text-[8px] text-[#5850EC]">{item.assignee}</div> Assignee</span>
-                                   </div>
-                                </div>
-                            ))}
-                         </div>
-                    </section>
-                </div>
-             </div>
+                <section className="pt-4 border-t border-zinc-100">
+                  <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 flex items-center">
+                    <BarChart2 size={12} className="mr-2" /> Speaker Dominance
+                  </h3>
+                  <div className="space-y-4">
+                    {Object.entries(mockAnalytics.talkRatio).map(([name, ratio]) => (
+                      <div key={name}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-zinc-800 font-medium">{name}</span>
+                          <span className="text-zinc-500">{ratio}%</span>
+                        </div>
+                        <div className="w-full h-1 bg-zinc-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-[#5850EC]" style={{ width: `${ratio}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
 
-             <div className="px-8 py-4 bg-[#FFFFFF] border-t border-[#E4E4E7] flex items-center justify-between text-xs font-medium text-[#6B6B78]">
-                 <span className="flex items-center"><Download size={14} className="mr-2"/> Download available formats: PDF, DOCX, CSV</span>
-                 <div className="flex space-x-4">
-                     <span className="cursor-pointer hover:text-[#5850EC]">Sync to Notion</span>
-                     <span className="cursor-pointer hover:text-[#5850EC]">Sync to Jira</span>
-                     <span className="cursor-pointer hover:text-[#5850EC]">Send via Slack</span>
-                 </div>
-             </div>
+              {/* Right: Summary + Actions */}
+              <div className="w-2/3 flex flex-col space-y-6">
+                <section className="p-5 bg-zinc-50 border border-zinc-200 rounded-2xl relative overflow-hidden group hover:border-[#5850EC]/30 transition-colors">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-[#5850EC]/5 rounded-bl-full -mr-16 -mt-16 pointer-events-none" />
+                  <h3 className="text-sm font-bold text-zinc-900 mb-3">Executive Summary</h3>
+                  <p className="text-sm text-zinc-600 leading-relaxed italic">"{aiSummary}"</p>
+                </section>
+
+                <section>
+                  <h3 className="text-sm font-bold text-zinc-900 mb-3">
+                    Action Items Extracted ({actionItems.length})
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {actionItems.map(item => (
+                      <div key={item.id} className={clsx(
+                        'p-3 rounded-xl border flex items-start space-x-3',
+                        item.completed ? 'bg-green-50 border-green-200' : 'bg-white border-zinc-200'
+                      )}>
+                        <CheckCircle2 size={16} className={item.completed ? 'text-green-500 flex-shrink-0' : 'text-zinc-300 flex-shrink-0'} />
+                        <div>
+                          <p className="text-xs font-bold text-zinc-800 mb-1 leading-snug">{item.task}</p>
+                          <span className="text-[10px] text-zinc-500 font-medium">Assignee: {item.assignee}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {actionItems.length === 0 && (
+                      <p className="text-xs text-zinc-400 italic col-span-2">No action items extracted.</p>
+                    )}
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            {/* Footer: Downloads + Integrations */}
+            <div className="px-8 py-4 bg-white border-t border-zinc-100 flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center space-x-3">
+                <span className="flex items-center text-[11px] text-zinc-400 font-medium">
+                  <Download size={14} className="mr-1.5" /> Download:
+                </span>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 text-[11px] font-bold text-zinc-700 hover:border-[#5850EC] hover:text-[#5850EC] hover:bg-[#5850EC]/5 transition-all"
+                >
+                  PDF
+                </button>
+                <button
+                  onClick={handleDownloadDOCX}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 text-[11px] font-bold text-zinc-700 hover:border-[#5850EC] hover:text-[#5850EC] hover:bg-[#5850EC]/5 transition-all"
+                >
+                  DOCX
+                </button>
+                <button
+                  onClick={handleSendEmail}
+                  className="px-4 py-2 rounded-xl border border-zinc-200 text-[11px] font-bold text-zinc-700 hover:border-[#5850EC] hover:text-[#5850EC] hover:bg-[#5850EC]/5 transition-all flex items-center space-x-1.5"
+                >
+                  <Mail size={12} />
+                  <span>Email Summary</span>
+                </button>
+              </div>
+              <div className="flex items-center space-x-3">
+                {INTEGRATIONS.map(({ name, url, color }) => (
+                  <button
+                    key={name}
+                    onClick={() => window.open(url, '_blank', 'noopener')}
+                    className={clsx(
+                      'px-4 py-2 rounded-xl border border-zinc-200 text-[11px] font-bold text-zinc-500 transition-all',
+                      color
+                    )}
+                  >
+                    Sync to {name}
+                  </button>
+                ))}
+              </div>
+            </div>
           </motion.div>
         </React.Fragment>
       )}

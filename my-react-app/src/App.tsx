@@ -63,6 +63,8 @@ const App: React.FC = () => {
       infinite: false,
     });
 
+    (window as any).lenis = lenis;
+
     lenis.on('scroll', ScrollTrigger.update);
     const updateLenis = (time: number) => {
       lenis.raf(time * 1000);

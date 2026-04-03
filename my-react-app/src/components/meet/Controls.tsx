@@ -1,131 +1,332 @@
-import React, { useState } from 'react';
-import { 
-  Mic, MicOff, 
-  Video, VideoOff, 
-  MonitorUp, 
-  CircleDot, 
-  Smile, 
-  MoreVertical, 
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Mic, MicOff,
+  Video, VideoOff,
+  MonitorUp, MonitorOff,
+  CircleDot,
+  Smile,
+  MoreVertical,
   LogOut,
-  Brain
+  Brain,
+  Hand,
+  LayoutGrid,
+  PanelLeft,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMeetingStore } from '../../store/useMeetingStore';
+import { useMeetingStore, type LayoutMode } from '../../store/useMeetingStore';
+
+const EMOJI_LIST = ['👍', '🔥', '❤️', '😂', '😮', '🙏', '👏', '✅', '🚀', '💡', '❓', '👋'];
+const LAYOUT_MODES: LayoutMode[] = ['gallery', 'speaker', 'spotlight', 'sidebar'];
+const LAYOUT_LABELS: Record<LayoutMode, string> = {
+  gallery: 'Gallery',
+  speaker: 'Speaker',
+  spotlight: 'Spotlight',
+  sidebar: 'Sidebar',
+};
 
 const Controls: React.FC<{ onExit?: () => void }> = ({ onExit }) => {
-  const { 
-    micOn, toggleMic, 
-    camOn, toggleCam, 
+  const {
+    micOn, toggleMic,
+    camOn, toggleCam,
     isRecording, toggleRecording,
-    isAIPanelOpen, toggleAIPanel
+    isAIPanelOpen, toggleAIPanel,
+    isSidebarOpen, toggleSidebar,
+    isScreenSharing, setScreenShareStream,
+    layout, setLayout,
+    raiseHand, lowerHand,
+    handRaiseQueue,
+    participants,
+    mediaPermission,
   } = useMeetingStore();
-  
-  const [emojis, setEmojis] = useState<{ id: number, emoji: string }[]>([]);
 
-  const triggerEmoji = (emoji: string) => {
+  const me = participants.find(p => p.id === 'host-local');
+  const isRaisingHand = me ? handRaiseQueue.includes(me.id) : false;
+
+  const [floatingEmojis, setFloatingEmojis] = useState<{ id: number; emoji: string }[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
+
+  const emojiRef = useRef<HTMLDivElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const layoutRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (emojiRef.current && !emojiRef.current.contains(e.target as Node)) setShowEmojiPicker(false);
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) setShowMoreMenu(false);
+      if (layoutRef.current && !layoutRef.current.contains(e.target as Node)) setShowLayoutMenu(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const fireEmoji = (emoji: string) => {
     const id = Date.now();
-    setEmojis(prev => [...prev, { id, emoji }]);
-    setTimeout(() => {
-        setEmojis(prev => prev.filter(e => e.id !== id));
-    }, 4000);
+    setFloatingEmojis(prev => [...prev, { id, emoji }]);
+    setShowEmojiPicker(false);
+    setTimeout(() => setFloatingEmojis(prev => prev.filter(e => e.id !== id)), 4000);
   };
 
+  const handleScreenShare = async () => {
+    if (isScreenSharing) {
+      setScreenShareStream(null);
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+      setScreenShareStream(stream);
+      stream.getVideoTracks()[0].addEventListener('ended', () => setScreenShareStream(null));
+    } catch { /* cancelled */ }
+  };
+
+  const handleRaiseHand = () => {
+    if (!me) return;
+    isRaisingHand ? lowerHand(me.id) : raiseHand(me.id);
+  };
+
+  const controlBtn = (active: boolean, danger = false) => clsx(
+    'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-95',
+    active && !danger && 'bg-[#5850EC] text-white shadow-md shadow-[#5850EC]/20',
+    active && danger && 'bg-red-500 text-white shadow-md shadow-red-500/20',
+    !active && 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700 hover:text-zinc-900'
+  );
+
   return (
-    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1002] flex justify-center pointer-events-none">
-       {/* Emoji Float Layer */}
-       <div className="absolute inset-x-0 bottom-full pointer-events-none h-[400px]">
+    <div className="relative z-[1002] flex justify-center pb-4 pt-2 pointer-events-none">
+      {/* Emoji Float Layer */}
+      <div className="absolute inset-x-0 bottom-full pointer-events-none h-[400px]">
+        <AnimatePresence>
+          {floatingEmojis.map(e => (
+            <motion.span
+              key={e.id}
+              initial={{ y: 0, opacity: 0, scale: 0.5, x: (Math.random() - 0.5) * 100 }}
+              animate={{ y: -300, opacity: [0, 1, 1, 0], scale: [0.5, 1.5, 1.5, 0.5] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 3, ease: 'easeOut' }}
+              className="absolute left-1/2 -translate-x-1/2 text-4xl"
+            >
+              {e.emoji}
+            </motion.span>
+          ))}
+        </AnimatePresence>
+      </div>
+
+      <div className="relative rounded-2xl bg-white/95 border border-zinc-200/80 shadow-[0_8px_30px_rgba(0,0,0,0.06)] backdrop-blur-xl px-3 py-2 flex items-center gap-2 pointer-events-auto">
+
+        {/* Sidebar Toggle */}
+        <button
+          onClick={toggleSidebar}
+          className={controlBtn(isSidebarOpen)}
+          title={isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar'}
+        >
+          <PanelLeft size={18} />
+        </button>
+
+        <div className="w-px h-7 bg-zinc-200" />
+
+        {/* Mic */}
+        <button
+          onClick={toggleMic}
+          className={clsx(controlBtn(!micOn, true), mediaPermission !== 'granted' && 'opacity-50 cursor-not-allowed')}
+          title={micOn ? 'Mute' : 'Unmute'}
+          disabled={mediaPermission !== 'granted'}
+        >
+          {micOn ? <Mic size={18} /> : <MicOff size={18} />}
+        </button>
+
+        {/* Camera */}
+        <button
+          onClick={toggleCam}
+          className={clsx(controlBtn(!camOn, true), mediaPermission !== 'granted' && 'opacity-50 cursor-not-allowed')}
+          title={camOn ? 'Stop Video' : 'Start Video'}
+          disabled={mediaPermission !== 'granted'}
+        >
+          {camOn ? <Video size={18} /> : <VideoOff size={18} />}
+        </button>
+
+        <div className="w-px h-7 bg-zinc-200" />
+
+        {/* Screen Share */}
+        <button
+          onClick={handleScreenShare}
+          className={controlBtn(isScreenSharing)}
+          title={isScreenSharing ? 'Stop Sharing' : 'Share Screen'}
+        >
+          {isScreenSharing ? <MonitorOff size={18} /> : <MonitorUp size={18} />}
+        </button>
+
+        {/* Record */}
+        <button
+          onClick={toggleRecording}
+          className={clsx(
+            controlBtn(isRecording, true),
+            isRecording && 'animate-pulse'
+          )}
+          title={isRecording ? 'Stop Recording' : 'Record'}
+        >
+          <CircleDot size={18} />
+        </button>
+
+        {/* AI Panel */}
+        <button
+          onClick={toggleAIPanel}
+          className={controlBtn(isAIPanelOpen)}
+          title="AI Copilot"
+        >
+          <Brain size={18} />
+        </button>
+
+        {/* Raise Hand */}
+        <button
+          onClick={handleRaiseHand}
+          className={clsx(
+            'w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-95',
+            isRaisingHand
+              ? 'bg-amber-400 text-white shadow-md shadow-amber-400/30'
+              : 'bg-zinc-100 hover:bg-amber-50 text-zinc-700 hover:text-amber-500'
+          )}
+          title={isRaisingHand ? 'Lower Hand' : 'Raise Hand'}
+        >
+          <Hand size={18} />
+        </button>
+
+        {/* Layout Picker */}
+        <div ref={layoutRef} className="relative">
+          <button
+            onClick={() => setShowLayoutMenu(v => !v)}
+            className={clsx(controlBtn(showLayoutMenu), 'relative')}
+            title={`Layout: ${layout}`}
+          >
+            <LayoutGrid size={18} />
+          </button>
+
           <AnimatePresence>
-             {emojis.map(e => (
-               <motion.span 
-                 key={e.id}
-                 initial={{ y: 0, opacity: 0, scale: 0.5, x: (Math.random() - 0.5) * 100 }}
-                 animate={{ y: -300, opacity: [0, 1, 1, 0], scale: [0.5, 1.5, 1.5, 0.5] }}
-                 exit={{ opacity: 0 }}
-                 transition={{ duration: 3, ease: 'easeOut' }}
-                 className="absolute left-1/2 -translate-x-1/2 text-4xl"
-               >
-                 {e.emoji}
-               </motion.span>
-             ))}
+            {showLayoutMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-white border border-zinc-200 rounded-xl shadow-xl p-1.5 z-50 min-w-[140px]"
+              >
+                {LAYOUT_MODES.map(mode => (
+                  <button
+                    key={mode}
+                    onClick={() => { setLayout(mode); setShowLayoutMenu(false); }}
+                    className={clsx(
+                      'w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium transition-colors',
+                      layout === mode ? 'bg-[#5850EC]/10 text-[#5850EC]' : 'text-zinc-600 hover:bg-zinc-50'
+                    )}
+                  >
+                    {LAYOUT_LABELS[mode]}
+                  </button>
+                ))}
+              </motion.div>
+            )}
           </AnimatePresence>
-       </div>
+        </div>
 
-       <div className="relative rounded-full bg-[#FFFFFF]/90 border border-[#FFFFFF]/20 shadow-[0_12px_30px_rgba(0,0,0,0.04)] backdrop-blur-xl p-3 flex items-center space-x-4 pointer-events-auto transition-all">
-          {/* Controls Group */}
-          <div className="flex items-center space-x-3 px-3 border-r border-[#E4E4E7]">
-             <button 
-               onClick={toggleMic}
-               className={clsx(
-                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-95 shadow-sm',
-                 micOn ? 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]' : 'bg-[#EF4444] text-[#FFFFFF]'
-               )}
-             >
-                {micOn ? <Mic size={20} /> : <MicOff size={20} />}
-             </button>
-             <button 
-               onClick={toggleCam}
-               className={clsx(
-                 'w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 group active:scale-95 shadow-sm',
-                 camOn ? 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]' : 'bg-[#EF4444] text-[#FFFFFF]'
-               )}
-             >
-                {camOn ? <Video size={20} /> : <VideoOff size={20} />}
-             </button>
-          </div>
+        {/* Emoji Picker */}
+        <div ref={emojiRef} className="relative">
+          <button
+            onClick={() => setShowEmojiPicker(v => !v)}
+            className={controlBtn(showEmojiPicker)}
+            title="React"
+          >
+            <Smile size={18} />
+          </button>
 
-          <div className="flex items-center space-x-3 px-3">
-             <button className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC] flex items-center justify-center transition-all active:scale-95 shadow-sm group">
-                <MonitorUp size={20} className="group-hover:-translate-y-0.5 transition-transform" />
-             </button>
-             <button 
-               onClick={toggleRecording}
-               className={clsx(
-                 'w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] flex items-center justify-center transition-all active:scale-95 shadow-sm group hover:text-[#EF4444]',
-                 isRecording ? 'text-[#EF4444] ring-2 ring-[#EF4444]/30' : 'text-[#111111]'
-               )}
-             >
-                <CircleDot size={20} className={clsx(isRecording && 'animate-pulse')} />
-             </button>
-             <button 
-                onClick={toggleAIPanel}
-                className={clsx(
-                  'w-12 h-12 rounded-full flex items-center justify-center transition-all active:scale-95 shadow-sm group',
-                  isAIPanelOpen ? 'bg-[#5850EC] text-[#FFFFFF] shadow-[0_4px_15px_rgba(88,80,236,0.3)]' : 'bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC]'
-                )}
-             >
-                <Brain size={20} className={clsx(isAIPanelOpen && 'animate-pulse')} />
-             </button>
-             <button 
-                className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#5850EC] flex items-center justify-center transition-all active:scale-95 shadow-sm group relative"
-                onClick={() => triggerEmoji('🔥')}
-             >
-                <Smile size={20} className="group-hover:scale-110 transition-transform" />
-             </button>
-             <button className="w-12 h-12 rounded-full bg-[#F8F8FC] hover:bg-[#EEF2FF] text-[#111111] hover:text-[#6B6B78] flex items-center justify-center transition-all active:scale-95 shadow-sm group">
-                <MoreVertical size={20} />
-             </button>
-          </div>
+          <AnimatePresence>
+            {showEmojiPicker && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 bg-white border border-zinc-200 rounded-2xl shadow-xl p-2 z-50 w-max"
+              >
+                <div
+                  className="grid gap-1"
+                  style={{ gridTemplateColumns: 'repeat(4, 40px)', gridAutoRows: '40px' }}
+                >
+                  {EMOJI_LIST.map(emoji => (
+                    <button
+                      key={emoji}
+                      onClick={() => fireEmoji(emoji)}
+                      className="rounded-lg hover:bg-zinc-100 flex items-center justify-center text-xl transition-all active:scale-90 hover:scale-110"
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
-          {/* End Call Separator */}
-          <div className="pl-3">
-             <button 
-               className="h-12 px-6 bg-[#EF4444] hover:bg-red-600 text-[#FFFFFF] rounded-full flex items-center space-x-3 transition-colors active:scale-95 shadow-[0_4px_15px_rgba(239,68,68,0.2)] group"
-               onClick={() => onExit ? onExit() : window.location.href = '/'}
-             >
-                <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest hidden md:inline">Exit Session</span>
-             </button>
-          </div>
-       </div>
+        {/* More Menu */}
+        <div ref={moreRef} className="relative">
+          <button
+            onClick={() => setShowMoreMenu(v => !v)}
+            className={controlBtn(showMoreMenu)}
+            title="More options"
+          >
+            <MoreVertical size={18} />
+          </button>
 
-       {/* Floating REC tag */}
-        {isRecording && (
-           <div className="absolute top-[-50px] px-4 py-2 bg-[#FFFFFF]/90 backdrop-blur-md border border-[#EF4444]/30 rounded-full flex items-center space-x-2 shadow-xl animate-float">
-                <div className="w-2 h-2 rounded-full bg-[#EF4444] animate-pulse" />
-                <span className="text-[9px] font-mono font-black text-[#EF4444] tracking-[0.2em] uppercase">Recording Node Status</span>
-           </div>
-       )}
+          <AnimatePresence>
+            {showMoreMenu && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                transition={{ duration: 0.15 }}
+                className="absolute bottom-full mb-3 right-0 bg-white border border-zinc-200 rounded-xl shadow-xl p-1.5 z-50 min-w-[180px]"
+              >
+                {['Virtual Background', 'Noise Suppression', 'Bandwidth Mode', 'Keyboard Shortcuts', 'Report Issue'].map(item => (
+                  <button
+                    key={item}
+                    onClick={() => setShowMoreMenu(false)}
+                    className="w-full text-left px-3 py-2 rounded-lg text-[13px] font-medium text-zinc-600 hover:bg-zinc-50 hover:text-[#5850EC] transition-colors"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div className="w-px h-7 bg-zinc-200" />
+
+        {/* End Call */}
+        <button
+          className="h-11 px-5 bg-red-500 hover:bg-red-600 text-white rounded-xl flex items-center space-x-2 transition-colors active:scale-95 shadow-md shadow-red-500/15"
+          onClick={() => onExit ? onExit() : (window.location.href = '/')}
+        >
+          <LogOut size={16} />
+          <span className="text-[13px] font-semibold hidden md:inline">Leave</span>
+        </button>
+      </div>
+
+      {/* Recording indicator */}
+      {isRecording && (
+        <div className="absolute top-[-44px] left-1/2 -translate-x-1/2 px-4 py-2 bg-white/95 backdrop-blur-md border border-red-200 rounded-xl flex items-center space-x-2 shadow-lg pointer-events-auto">
+          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+          <span className="text-[12px] font-semibold text-red-600">Recording</span>
+        </div>
+      )}
+
+      {/* Screen share indicator */}
+      {isScreenSharing && (
+        <div className="absolute top-[-44px] right-4 px-4 py-2 bg-white/95 backdrop-blur-md border border-[#5850EC]/20 rounded-xl flex items-center space-x-2 shadow-lg pointer-events-auto">
+          <div className="w-2 h-2 rounded-full bg-[#5850EC] animate-pulse" />
+          <span className="text-[12px] font-semibold text-[#5850EC]">Sharing Screen</span>
+        </div>
+      )}
     </div>
   );
 };

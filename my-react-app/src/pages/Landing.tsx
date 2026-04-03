@@ -22,7 +22,7 @@ const Landing: React.FC = () => {
       setTimeout(() => {
         const el = document.getElementById(id);
         if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          el.scrollIntoView({ behavior: 'auto', block: 'start' });
         }
       }, 100);
     }
@@ -40,8 +40,9 @@ const Landing: React.FC = () => {
       <section id="security" className="scroll-mt-24"><FloatingMockup /></section>
       <StatsBar />
       <section id="strategic" className="scroll-mt-24"><Features /></section>
-      <AIShowcase />
-      <section id="enterprise" className="scroll-mt-24"><TechMarquee /><CTABanner /></section>
+      <section id="intelligence" className="scroll-mt-24"><AIShowcase /></section>
+      <TechMarquee />
+      <section id="enterprise" className="scroll-mt-24"><CTABanner /></section>
       <Footer />
     </div>
   );
