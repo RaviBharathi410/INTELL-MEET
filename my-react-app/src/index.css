@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Prevent white flash before LogoReveal mounts */
+html, body {
+  background-color: #000000;
+}
+
+
 @theme {
   --color-primary: #5850EC;
   --color-accent: #FFFFFF;

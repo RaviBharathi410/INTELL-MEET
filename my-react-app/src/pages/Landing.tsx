@@ -44,7 +44,7 @@ const Landing: React.FC = () => {
         "scroll-container bg-white transition-opacity duration-1000",
         revealComplete ? "opacity-100" : "opacity-0"
     )}>
-      {!alreadyPlayed && <LogoReveal onComplete={() => setRevealComplete(true)} />}
+      <LogoReveal onComplete={() => setRevealComplete(true)} />
       <Hero />
       <div id="ecosystem"><HorizontalScroll /></div>
       <section id="security" className="scroll-mt-24"><FloatingMockup /></section>
