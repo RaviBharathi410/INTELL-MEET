@@ -16,7 +16,13 @@ const Navbar: React.FC = () => {
   }, []);
 
   const isLandingPage = location.pathname === '/';
-  const [isVisible, setIsVisible] = useState(true);
+  // Check immediately if we should be visible to prevent one-frame flashes
+  const [isVisible, setIsVisible] = useState(() => {
+    if (location.pathname === '/' && sessionStorage.getItem('logoRevealed') !== 'true') {
+      return false;
+    }
+    return true;
+  });
 
   useEffect(() => {
     if (isLandingPage && sessionStorage.getItem('logoRevealed') !== 'true') {
