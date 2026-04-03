@@ -74,7 +74,7 @@ const AIPanel: React.FC = () => {
     isResizing.current = true;
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', stopResizing);
-    document.body.style.cursor = 'col-resize';
+    document.body.style.cursor = 'default';
     document.body.style.userSelect = 'none';
   }, [handleMouseMove, stopResizing]);
 
@@ -185,9 +185,9 @@ const AIPanel: React.FC = () => {
             {/* Resizer Handle */}
             <div
               onMouseDown={startResizing}
-              className="absolute top-0 left-0 w-1.5 h-full cursor-col-resize hover:bg-[#5850EC]/10 transition-colors z-[60] group"
+              className="absolute top-0 left-0 w-1.5 h-full cursor-default hover:bg-zinc-900/5 transition-colors z-[60] group"
             >
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-8 w-1 rounded-full bg-zinc-200 group-hover:bg-[#5850EC]/30 transition-all opacity-0 group-hover:opacity-100" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-0.5 rounded-full bg-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
 
             {/* Header */}

@@ -437,7 +437,7 @@ const Sidebar: React.FC = () => {
     isResizing.current = true;
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', stopResizing);
-    document.body.style.cursor = 'col-resize';
+    document.body.style.cursor = 'default';
     document.body.style.userSelect = 'none';
   }, [handleMouseMove, stopResizing]);
 
@@ -482,11 +482,11 @@ const Sidebar: React.FC = () => {
       <div
         onMouseDown={startResizing}
         className={clsx(
-            "absolute top-0 right-[-4px] w-4 h-full cursor-col-resize z-50 transition-all bg-transparent",
-            isResizing.current && "bg-[#5850EC]/5"
+            "absolute top-0 right-[-4px] w-4 h-full cursor-default z-50 transition-all bg-transparent group",
+            isResizing.current && "bg-zinc-900/5"
         )}
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-0.5 rounded-full bg-zinc-200 opacity-0 hover:opacity-100 transition-opacity" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-16 w-0.5 rounded-full bg-zinc-300 opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
 
       <div className="pt-4 flex flex-col h-full overflow-hidden">
