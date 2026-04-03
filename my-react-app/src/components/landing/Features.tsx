@@ -59,7 +59,7 @@ const Features: React.FC = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col items-center relative z-10 w-full">
         <h2 
-          className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 text-center mb-16 md:mb-24 tracking-[-0.05em] leading-none"
+          className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 text-center mb-12 md:mb-20 tracking-[-0.05em] leading-none"
         >
           Built for spectral scale.
         </h2>

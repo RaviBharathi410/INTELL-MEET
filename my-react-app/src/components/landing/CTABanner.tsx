@@ -127,13 +127,13 @@ const CTABanner: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center justify-center gap-10">
            <button 
               onClick={() => navigate('/access')} 
-              className="px-14 py-6 bg-accent text-white font-black rounded-full shadow-[0_30px_60px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[13px]"
+              className="px-10 py-5 bg-accent text-white font-black rounded-full shadow-[0_20px_40px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[12px]"
            >
               EXPLORE PLATFORM
            </button>
            <button 
               onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' }) || window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
-              className="px-14 py-6 bg-zinc-100 border border-zinc-200 text-zinc-950 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[13px]"
+              className="px-10 py-5 bg-zinc-100 border border-zinc-200 text-zinc-950 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[12px]"
            >
               VIEW SYSTEMS
            </button>

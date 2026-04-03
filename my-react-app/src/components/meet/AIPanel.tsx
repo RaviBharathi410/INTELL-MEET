@@ -180,7 +180,7 @@ const AIPanel: React.FC = () => {
             animate={{ width, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="h-full bg-white border-l border-zinc-200 flex flex-col relative z-50 overflow-hidden flex-shrink-0 shadow-2xl shadow-zinc-900/5"
+            className="h-full self-stretch bg-white border-l border-zinc-200 flex flex-col relative z-50 overflow-hidden flex-shrink-0 shadow-2xl shadow-zinc-900/5"
           >
             {/* Resizer Handle */}
             <div
@@ -212,7 +212,7 @@ const AIPanel: React.FC = () => {
               </button>
             </div>
 
-            <div data-lenis-prevent className="flex-1 overflow-y-auto px-6 space-y-8 pb-40 pt-6 custom-scrollbar min-h-0 bg-white">
+            <div data-lenis-prevent className="flex-1 overflow-y-auto px-6 space-y-8 pb-6 pt-6 custom-scrollbar min-h-0 bg-white">
 
               {/* Sentiment */}
               <section>

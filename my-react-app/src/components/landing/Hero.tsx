@@ -122,27 +122,27 @@ const Hero: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-screen bg-white flex flex-col items-center pt-32 md:pt-48 lg:pt-60 pb-20 md:pb-40 px-6 overflow-hidden"
+      className="relative min-h-screen bg-white flex flex-col items-center pt-24 md:pt-36 lg:pt-44 pb-14 md:pb-28 px-6 overflow-hidden"
     >
       <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none opacity-40" />
 
       <div className="relative z-10 flex flex-col items-center text-center max-w-6xl mx-auto">
         <h1 
           ref={headlineRef}
-          className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[140px] font-black text-zinc-950 leading-[0.85] md:leading-[0.8] tracking-[-0.05em] mb-8 md:mb-12"
+          className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[140px] font-black text-zinc-950 leading-[0.85] md:leading-[0.8] tracking-[-0.05em] mb-6 md:mb-10"
         >
           Meetings redefined.
         </h1>
         
         <div className="hero-content mt-8 text-center flex flex-col items-center w-full">
-          <h2 className="font-display text-xl sm:text-2xl md:text-3xl lg:text-4xl font-medium text-zinc-600 mb-10 md:mb-16 tracking-tight max-w-3xl mx-auto flex items-center justify-center border-l-4 border-accent pl-6 md:pl-8 text-left md:text-center">
+          <h2 className="font-display text-lg sm:text-xl md:text-2xl lg:text-3xl font-medium text-zinc-600 mb-8 md:mb-12 tracking-tight max-w-3xl mx-auto flex items-center justify-center border-l-4 border-accent pl-6 md:pl-8 text-left md:text-center">
             The AI-first workspace for high-performance teams.
           </h2>
           
           <div className="flex flex-col md:flex-row items-center justify-center gap-8">
             <button 
               onClick={() => navigate('/access')}
-              className="px-14 py-6 bg-accent text-white font-black rounded-full shadow-[0_30px_60px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[13px]"
+              className="px-10 py-5 bg-accent text-white font-black rounded-full shadow-[0_20px_40px_-10px_rgba(79,70,229,0.4)] hover:scale-105 active:scale-95 transition-all duration-300 uppercase tracking-widest text-[12px]"
             >
               Start Meeting
             </button>
@@ -151,7 +151,7 @@ const Hero: React.FC = () => {
                 const el = document.getElementById('ecosystem');
                 el?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="px-14 py-6 bg-zinc-100 border border-zinc-200 text-zinc-900 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[13px]"
+              className="px-10 py-5 bg-zinc-100 border border-zinc-200 text-zinc-900 font-black rounded-full hover:bg-zinc-200 transition-all duration-300 uppercase tracking-widest text-[12px]"
             >
               Platform Tour
             </button>

@@ -120,7 +120,7 @@ const AIShowcase: React.FC = () => {
 
       <div className="max-w-7xl w-full relative z-10">
          <div className="text-center mb-12 md:mb-20 scroll-reveal">
-            <h2 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 mb-10 tracking-[-0.05em] leading-none">
+            <h2 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-[100px] font-black text-zinc-950 mb-8 tracking-[-0.05em] leading-none">
                Core Intelligence.
             </h2>
             <p className="text-zinc-600 text-xl font-medium font-body max-w-3xl mx-auto border-l-4 border-accent pl-12 text-left md:text-center">

@@ -105,7 +105,7 @@ const HorizontalDesktop: React.FC = () => {
         trigger: triggerRef.current,
         pin: true,
         scrub: 1,
-        start: 'top top',
+        start: 'top 5%',
         end: () => `+=${containerRef.current!.scrollWidth * 0.75}`,
       }
     });
@@ -147,7 +147,7 @@ const HorizontalDesktop: React.FC = () => {
         {steps.map((step, i) => (
           <section
             key={i}
-            className="phase-section h-screen w-screen flex flex-col items-center justify-center relative px-20"
+            className="phase-section h-screen w-screen flex flex-col items-center justify-center relative px-20 pt-20"
             style={{ background: step.bg }}
           >
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 overflow-hidden pointer-events-none">
@@ -160,7 +160,7 @@ const HorizontalDesktop: React.FC = () => {
               <span className="font-mono text-accent text-sm mb-8 tracking-[0.6em] uppercase font-black opacity-40">
                 Phase {step.number} — System Stable
               </span>
-              <h2 className="font-display text-7xl lg:text-[100px] xl:text-[140px] font-black text-zinc-950 mb-12 tracking-[-0.05em] leading-[0.85]">
+              <h2 className="font-display text-7xl lg:text-[100px] xl:text-[140px] font-black text-zinc-950 mb-10 tracking-[-0.05em] leading-[0.85]">
                 {step.title}
               </h2>
               <p className="text-zinc-600 text-xl lg:text-2xl xl:text-3xl font-medium leading-relaxed max-w-3xl font-body border-t border-zinc-100 pt-10">
@@ -170,7 +170,7 @@ const HorizontalDesktop: React.FC = () => {
 
             {/* Connection Line */}
             {i < steps.length - 1 && (
-              <div className="absolute right-0 top-1/2 h-[4px] w-40 xl:w-80 bg-zinc-100 shadow-inner overflow-hidden">
+              <div className="absolute bottom-12 left-1/2 -translate-x-1/2 h-[4px] w-40 xl:w-80 bg-zinc-100 shadow-inner overflow-hidden">
                 <div className="h-full bg-accent w-full -translate-x-full animate-line-move" />
               </div>
             )}

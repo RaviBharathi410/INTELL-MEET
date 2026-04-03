@@ -36,16 +36,17 @@ const MeetRoom: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* Video Grid — fills all remaining space */}
-        <div className="flex-1 min-w-0 relative">
-          <VideoGrid />
+        {/* Video Grid area — fills all remaining space */}
+        <div className="flex-1 min-w-0 flex flex-col relative">
+          <div className="flex-1 relative overflow-hidden">
+            <VideoGrid />
+          </div>
+          <Controls />
         </div>
 
         {/* AI Panel — collapsible */}
         <AIPanel />
       </div>
-
-      <Controls />
     </div>
   );
 };
