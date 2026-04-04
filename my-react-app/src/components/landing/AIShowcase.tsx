@@ -2,16 +2,30 @@ import React, { useRef } from 'react';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import { TextPlugin } from 'gsap/TextPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MOTION } from '../../utils/motion';
 import TiltCard from '../ui/Feature';
 
-gsap.registerPlugin(TextPlugin);
+gsap.registerPlugin(TextPlugin, ScrollTrigger);
 
 const AIShowcase: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    // Section entrance animation
+    gsap.from(containerRef.current, {
+      y: 80,
+      opacity: 0,
+      duration: 1.2,
+      ease: MOTION.ease.smooth,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top 85%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
     // Entrance animations
     gsap.fromTo('.scroll-reveal', 
       { y: 60, opacity: 0 },

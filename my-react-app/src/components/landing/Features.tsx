@@ -1,4 +1,7 @@
 import React from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { 
   Video, 
   BrainCircuit, 
@@ -8,6 +11,8 @@ import {
   ShieldCheck 
 } from 'lucide-react';
 import TiltCard from '../ui/Feature';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const features = [
   { 
@@ -49,8 +54,50 @@ const features = [
 ];
 
 const Features: React.FC = () => {
+  const sectionRef = React.useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!sectionRef.current) return;
+
+    // Section entrance animation - slides up and fades in
+    gsap.fromTo(
+      sectionRef.current,
+      { y: 100, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 75%',
+          markers: false,
+        },
+      }
+    );
+
+    // Staggered card animations
+    const cards = sectionRef.current.querySelectorAll('.feature-card');
+    gsap.fromTo(
+      cards,
+      { y: 50, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        stagger: 0.12,
+        duration: 0.8,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 70%',
+        },
+      }
+    );
+  }, { scope: sectionRef });
+
   return (
     <section 
+      ref={sectionRef}
       className="py-24 md:py-32 px-6 md:px-10 bg-white relative overflow-visible select-none"
       style={{ perspective: '1000px' }}
     >

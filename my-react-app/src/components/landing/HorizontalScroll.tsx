@@ -39,17 +39,30 @@ const VerticalCards: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    gsap.from('.vertical-phase-card', {
-      y: 60,
+    // Entrance animation for the container
+    gsap.from(containerRef.current, {
+      y: 80,
       opacity: 0,
-      stagger: 0.15,
       duration: MOTION.duration.slow,
+      ease: MOTION.ease.smooth,
+      scrollTrigger: {
+        trigger: containerRef.current,
+        start: 'top 90%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // Staggered card animations
+    gsap.from('.vertical-phase-card', {
+      y: 40,
+      opacity: 0,
+      stagger: 0.12,
+      duration: MOTION.duration.medium,
       ease: MOTION.ease.standard,
       scrollTrigger: {
         trigger: containerRef.current,
         start: 'top 85%',
-        end: 'bottom 60%',
-        scrub: 1,
+        toggleActions: 'play none none reverse',
       },
     });
   }, { scope: containerRef });
@@ -98,6 +111,17 @@ const HorizontalDesktop: React.FC = () => {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
+    // Subtle entrance fade for the entire section
+    gsap.from(triggerRef.current, {
+      opacity: 0.7,
+      duration: MOTION.duration.medium,
+      ease: MOTION.ease.standard,
+      scrollTrigger: {
+        trigger: triggerRef.current,
+        start: 'top 80%',
+        toggleActions: 'play none none reverse',
+      },
+    });
     const pin = gsap.to(containerRef.current, {
       x: () => -(containerRef.current!.scrollWidth - window.innerWidth),
       ease: 'none',
